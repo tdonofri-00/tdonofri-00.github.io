@@ -6,7 +6,7 @@ Wiggum is now out of his cola trance! With Springfield in shambles, it's up to C
 ### [Comic Life Demo](http://donutteam.com/forum/topic/1223/)
 Comic Book Guy now has a rival, this is the comic life!
 
-### [A Clown's Life - Diddllyus Maximus](http://donutteam.com/forum/topic/1261/)
+### [A Clown's Life Demo - Diddllyus Maximus](http://donutteam.com/forum/topic/1261/)
 Krusty the Clown's adventures!
 
 `This is not the planned site, this is auto generated for now`
