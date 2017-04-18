@@ -9,5 +9,4 @@ Comic Book Guy now has a rival, this is the comic life!
 ### [A Clown's Life - Diddllyus Maximus](http://donutteam.com/forum/topic/1261/)
 Krusty the Clown's adventures!
 
-``
-This is not the planned site, this is auto generated for now...
+``This is not the planned site, this is auto generated for now...
