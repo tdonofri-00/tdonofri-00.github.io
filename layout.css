@@ -1,0 +1,15 @@
+h1,h2,h3, p, td {font-family: 'Helvetica', sans-serif;}
+html, body {
+	padding: 0;
+	max-width: 1000px;
+	margin: auto;
+	background-color: #15151C;
+	text-align: center;
+}
+
+
+
+img {
+	width: 100%;
+	height: auto;
+}
