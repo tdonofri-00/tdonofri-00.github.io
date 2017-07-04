@@ -19,7 +19,7 @@
 .showcaseCard h3{padding-left: 10px; font-size: 18px; display: inline-block; margin-bottom: 0px;}
 .modTitle{padding-left: 10px; display: inline-block; font-size: 14px; margin: 0px; font-style:normal; }
 .showcaseCard p {padding-left: 10px;  font-size: 14px; margin-top: 2px; }
-.blog{background-color: darkblue; width: 100%; height: 200%; position: relative; bottom: 21px; text-align: left;}
+.blog{background-color: darkblue; width: 100%; height: 150%; position: relative; bottom: 21px; text-align: left;}
 .blog h2{padding-top: 20px; font-weight: 100; padding-left: 10px; text-align: left;}
 .blog p {padding-left: 10px;}
 .blogEntry{ word-wrap: break-word; overflow: hidden; max-width: 980px; width: 980px; border-radius: 5px; border: 1px solid dimgray; height: 450px; margin-left: 10px; margin-right: 10px; margin-top: 150px; margin-bottom: 18px;background-color: #f1f1f1; box-shadow: 1px 1px 8px rgba(24, 24, 24, 0.12); text-align: left; display: inline-block; float: left;}
