@@ -1,15 +1,7 @@
-## Thomas Donofri Mods
+##About
 
-### [Wiggum In Zombieland](http://donutteam.com/forum/topic/1033/)
-Wiggum is now out of his cola trance! With Springfield in shambles, it's up to Chief Wiggum to save springfield.
+My name is Thomas Donofri, and I am currently a Computer Information Systems major at CT State Northwestern Community College, expected to graduate Winter 2026. Tentative plans to transfer to a University to get a Bachelor's in Computer Science.
 
-### [Army of Cola REMASTERED](http://donutteam.com/forum/topic/1178/)
-A remake of my first mod. Please excuse the title...
+I am a passionate developer with experience in game modding, programming, and mentoring aspiring creators. I have extensive experience with The Simpsons: Hit & Run (SHAR) modding, where I have developed custom content and gained a deep understanding of game scripting and mission design. Through a paid internship, I taught teenagers how to script missions in SHAR, helping them build technical skills while fostering creativity and problem-solving.
 
-### [Comic Life Demo](http://donutteam.com/forum/topic/1223/)
-Comic Book Guy now has a rival, this is the comic life!
-
-### [A Clown's Life Demo - Diddllyus Maximus](http://donutteam.com/forum/topic/1261/)
-Krusty the Clown's adventures!
-
-`This is not the planned site, this is auto generated for now`
+In addition to game modding, I have experience programming in Python and Java, using both languages to develop projects and strengthen my software development skills. I plan to pursue a bachelor's degree in Computer Science to further expand my knowledge and prepare for a career in software development. I enjoy learning new technologies, tackling challenging problems, and creating engaging, well-designed solutions. Whether I'm building software, designing game experiences, or helping others learn, I am committed to producing high-quality work and continually expanding my expertise. 
