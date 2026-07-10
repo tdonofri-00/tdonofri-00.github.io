@@ -1,7 +1,15 @@
-##About
+# Portfolio Website
 
-My name is Thomas Donofri, and I am currently a Computer Information Systems major at CT State Northwestern Community College, expected to graduate Winter 2026. Tentative plans to transfer to a University to get a Bachelor's in Computer Science.
+Personal portfolio website showcasing my experience with:
 
-I am a passionate developer with experience in game modding, programming, and mentoring aspiring creators. I have extensive experience with The Simpsons: Hit & Run (SHAR) modding, where I have developed custom content and gained a deep understanding of game scripting and mission design. Through a paid internship, I taught teenagers how to script missions in SHAR, helping them build technical skills while fostering creativity and problem-solving.
+- The Simpsons: Hit & Run modding
+- Python
+- Java
+- Game scripting
+- Teaching and mentoring
 
-In addition to game modding, I have experience programming in Python and Java, using both languages to develop projects and strengthen my software development skills. I plan to pursue a bachelor's degree in Computer Science to further expand my knowledge and prepare for a career in software development. I enjoy learning new technologies, tackling challenging problems, and creating engaging, well-designed solutions. Whether I'm building software, designing game experiences, or helping others learn, I am committed to producing high-quality work and continually expanding my expertise. 
+Built with HTML, CSS, and JavaScript.
+
+## GitHub Pages
+
+This site can be hosted using GitHub Pages by enabling Pages in the repository settings.
