@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>De-Jargonify | Thomas Donofri</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --primary: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+    }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); margin: 0; padding: 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .nav-bar a { color: var(--primary); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+    .nav-bar a:hover { text-decoration: underline; }
+
+    h1 { margin: 0; color: var(--primary); font-size: 1.8rem; }
+    p.subhead { color: var(--muted); margin: 0.25rem 0 0 0; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+
+    textarea {
+      width: 100%; height: 130px; background: #0b1120; border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 0.75rem; font-size: 0.95rem; resize: vertical;
+    }
+
+    .button-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    button {
+      background: var(--primary); color: #000; border: none;
+      padding: 0.65rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .test-btn {
+      background: #334155; color: var(--text); font-weight: 500; font-size: 0.8rem; padding: 0.5rem 0.8rem;
+    }
+    .test-btn:hover { background: #475569; }
+
+    .alert-banner {
+      display: none; background: var(--danger-bg); border: 1px solid var(--danger);
+      color: #fca5a5; padding: 0.85rem 1rem; border-radius: 6px; font-size: 0.9rem; line-height: 1.4;
+    }
+    .alert-banner.active { display: block; }
+    .alert-banner strong { color: #fff; }
+
+    .progress-container { display: none; align-items: center; gap: 0.75rem; width: 100%; margin-top: 0.25rem; }
+    .progress-container.active { display: flex; }
+    .progress-track {
+      flex: 1; height: 8px; background-color: #0b1120; border: 1px solid var(--border);
+      border-radius: 999px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 999px; transition: width 0.2s ease-out;
+    }
+    .progress-percentage { min-width: 42px; text-align: right; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
+
+    .score-badge-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0.5rem; }
+    .badge {
+      background: #0b1120; border: 1px solid var(--border); border-radius: 6px;
+      padding: 0.5rem 0.6rem; font-size: 0.8rem; text-align: center;
+    }
+    .badge-val { display: block; font-size: 1.15rem; font-weight: 700; color: var(--accent); margin-top: 0.2rem; }
+    .badge-val.negative { color: var(--warn); }
+
+    .tag-container { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag { background: #334155; color: #e2e8f0; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+    ul { margin: 0; padding-left: 1.2rem; }
+    li { margin-bottom: 0.35rem; font-size: 0.95rem; }
+    h4 { margin: 0.75rem 0 0.25rem 0; font-size: 0.95rem; color: #cbd5e1; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <div>
+      <h1>De-Jargonify</h1>
+      <p class="subhead">NLP translation, readability metrics, and corporate subtext decoder.</p>
+    </div>
+    <a href="index.html">← Back to Portfolio</a>
+  </div>
+
+  <div class="card">
+    <label for="input-text"><strong>Corporate Communication Input:</strong></label>
+    <textarea id="input-text">Per my previous email, we need to synergize our cross-functional bandwidth to leverage key operational learnings. Let's touch base offline to ensure optimal alignment on Q4 deliverables.</textarea>
+
+    <div class="button-row">
+      <button id="run-btn" type="button" onclick="runTranslation()">Analyze & Translate</button>
+      <span style="color: var(--muted); font-size: 0.8rem; margin-left: 0.5rem;">Sample Tests:</span>
+      <button class="test-btn" type="button" onclick="setSample('We must operationalize a paradigm shift to maximize multi-stakeholder buy-in before close of play.')">Corporate Blather</button>
+      <button class="test-btn" type="button" onclick="setSample('Moving forward, please ensure all action items are cascaded to avoid low-hanging fruit bottlenecks.')">Action Items</button>
+    </div>
+
+    <div id="error-box" class="alert-banner" role="alert"></div>
+
+    <div id="progress-container" class="progress-container">
+      <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+      <span id="progress-percent" class="progress-percentage">0%</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Plain-English Directive</h3>
+      <p id="output-plain" style="font-size: 1rem; line-height: 1.5; color: #e2e8f0; min-height: 60px;">Awaiting input...</p>
+
+      <h4>Flesch Reading Ease (Higher = Simpler)</h4>
+      <div class="score-badge-row">
+        <div class="badge"><span>Original Flesch</span><span class="badge-val" id="score-before">-</span></div>
+        <div class="badge"><span>New Flesch</span><span class="badge-val" id="score-after">-</span></div>
+        <div class="badge"><span>Clarity Uplift</span><span class="badge-val" id="score-lift">-</span></div>
+      </div>
+
+      <h4>Gunning Fog Index (Grade Level: Lower = Simpler)</h4>
+      <div class="score-badge-row">
+        <div class="badge"><span>Original Grade</span><span class="badge-val" id="fog-before">-</span></div>
+        <div class="badge"><span>New Grade</span><span class="badge-val" id="fog-after">-</span></div>
+        <div class="badge"><span>Grade Reduction</span><span class="badge-val" id="fog-drop">-</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Decoded Subtext & Tone</h3>
+      <p id="output-subtext" style="color: var(--muted); font-size: 0.95rem; line-height: 1.4;">-</p>
+
+      <h4>Identified Jargon Terms</h4>
+      <div id="output-tags" class="tag-container"></div>
+
+      <h4>Concrete Action Items</h4>
+      <ul id="output-actions"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Validated Cloudflare Worker endpoint
+  const WORKER_URL = "https://dejargon-api.thomas-j-donofri.workers.dev";
+
+  function countSyllables(word) {
+    word = word.toLowerCase().trim();
+    if (word.length <= 3) return 1;
+    word = word.replace(/(?:[^laeiouy]|ed|es|e)$/, '');
+    word = word.replace(/^y/, '');
+    const matches = word.match(/[aeiouy]{1,2}/g);
+    return matches ? Math.max(1, matches.length) : 1;
+  }
+
+  function calculateMetrics(text) {
+    const words = text.match(/\b[A-Za-z0-9'-]+\b/g) || [];
+    const sentences = (text.match(/[^.!?]+[.!?]?/g) || []).filter(s => s.trim().length > 0);
+    const totalWords = words.length;
+    const totalSentences = Math.max(1, sentences.length);
+
+    if (totalWords === 0) return { flesch: 0.0, fog: 0.0 };
+
+    const totalSyllables = words.reduce((acc, w) => acc + countSyllables(w), 0);
+    const complexWords = words.filter(w => countSyllables(w) >= 3).length;
+
+    const flesch = 206.835 - 1.015 * (totalWords / totalSentences) - 84.6 * (totalSyllables / totalWords);
+    const fog = 0.4 * ((totalWords / totalSentences) + 100 * (complexWords / totalWords));
+
+    return {
+      flesch: Math.round(Math.max(0, Math.min(100, flesch)) * 10) / 10,
+      fog: Math.round(fog * 10) / 10
+    };
+  }
+
+  const CORPUS_JARGON = [
+    "synergize", "cross-functional", "bandwidth", "operational learnings",
+    "touch base", "offline", "optimal alignment", "close of play", "low-hanging fruit",
+    "paradigm shift", "buy-in", "action items", "cascaded", "deliverables", "leverage"
+  ];
+
+  function extractLocalJargon(text) {
+    const lower = text.toLowerCase();
+    return CORPUS_JARGON.filter(term => lower.includes(term));
+  }
+
+  function setSample(msg) {
+    document.getElementById('input-text').value = msg;
+    runTranslation();
+  }
+
+  function showError(msg) {
+    const b = document.getElementById('error-box');
+    b.innerHTML = `<strong>Error:</strong> ${msg}`;
+    b.classList.add('active');
+  }
+
+  function hideError() {
+    const b = document.getElementById('error-box');
+    b.classList.remove('active');
+  }
+
+  function renderResults(plain, subtext, beforeM, afterM, tags, tasks) {
+    document.getElementById('output-plain').innerText = plain;
+    document.getElementById('output-subtext').innerText = subtext;
+
+    document.getElementById('score-before').innerText = beforeM.flesch;
+    document.getElementById('score-after').innerText = afterM.flesch;
+    const lift = Math.round((afterM.flesch - beforeM.flesch) * 10) / 10;
+    const liftElem = document.getElementById('score-lift');
+    liftElem.innerText = (lift > 0 ? "+" : "") + lift;
+    liftElem.className = "badge-val" + (lift < 0 ? " negative" : "");
+
+    document.getElementById('fog-before').innerText = beforeM.fog;
+    document.getElementById('fog-after').innerText = afterM.fog;
+    const drop = Math.round((beforeM.fog - afterM.fog) * 10) / 10;
+    const dropElem = document.getElementById('fog-drop');
+    dropElem.innerText = (drop > 0 ? "-" : "+") + Math.abs(drop);
+    dropElem.className = "badge-val" + (drop < 0 ? " negative" : "");
+
+    const tagBox = document.getElementById('output-tags');
+    tagBox.innerHTML = '';
+    tags.forEach(term => {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.innerText = term;
+      tagBox.appendChild(tag);
+    });
+
+    const actionBox = document.getElementById('output-actions');
+    actionBox.innerHTML = '';
+    tasks.forEach(task => {
+      const li = document.createElement('li');
+      li.innerText = task;
+      actionBox.appendChild(li);
+    });
+  }
+
+  async function runTranslation() {
+    const text = document.getElementById('input-text').value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById('run-btn');
+    const container = document.getElementById('progress-container');
+    const fill = document.getElementById('progress-fill');
+    const percent = document.getElementById('progress-percent');
+
+    hideError();
+    btn.disabled = true;
+    btn.innerText = "Analyzing...";
+    container.classList.add('active');
+
+    let p = 10;
+    fill.style.width = p + '%';
+    percent.innerText = p + '%';
+
+    const timer = setInterval(() => {
+      if (p < 85) {
+        p += Math.floor(Math.random() * 8) + 3;
+        fill.style.width = p + '%';
+        percent.innerText = p + '%';
+      }
+    }, 200);
+
+    const inputMetrics = calculateMetrics(text);
+    const localMatches = extractLocalJargon(text);
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+
+      const resJson = await res.json();
+
+      if (!res.ok) {
+        throw new Error(resJson.error?.message || resJson.error || `HTTP ${res.status}`);
+      }
+
+      // Handle candidate parts and strip markdown backticks if present
+      let rawText = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawText) {
+        throw new Error("Received empty model response structure.");
+      }
+
+      rawText = rawText.trim();
+      if (rawText.startsWith("```")) {
+        rawText = rawText.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
+      }
+
+      const parsed = JSON.parse(rawText);
+
+      clearInterval(timer);
+      fill.style.width = '100%';
+      percent.innerText = '100%';
+
+      const outputMetrics = calculateMetrics(parsed.plain_english_translation || "");
+      const combinedJargon = Array.from(new Set([...(parsed.flagged_jargon || []), ...localMatches]));
+
+      renderResults(
+        parsed.plain_english_translation || "No direct translation returned.",
+        parsed.subtext_and_tone || "No implicit tone analyzed.",
+        inputMetrics,
+        outputMetrics,
+        combinedJargon,
+        parsed.actionable_tasks || []
+      );
+
+    } catch (err) {
+      clearInterval(timer);
+      showError(err.message || "Failed to reach translation gateway.");
+      console.error("De-Jargonify error details:", err);
+    } finally {
+      clearInterval(timer);
+      setTimeout(() => {
+        container.classList.remove('active');
+        fill.style.width = '0%';
+        percent.innerText = '0%';
+        btn.disabled = false;
+        btn.innerText = "Analyze & Translate";
+      }, 350);
+    }
+  }
+</script>
+</body>
+</html>
