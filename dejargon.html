@@ -149,7 +149,11 @@
 </div>
 
 <script>
-  const API_URL = "http://localhost:8000/analyze";
+// Auto-switch between local development and Cloudflare Worker production
+  const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const API_URL = IS_LOCAL
+    ? "http://localhost:8000/analyze"
+    : "https://dejargon-api.thomas-j-donofri.workers.dev";
 
   function countSyllables(word) {
     word = word.toLowerCase().trim();
@@ -285,12 +289,27 @@
         throw new Error(resJson.detail || resJson.error?.message || resJson.error || `HTTP ${res.status}`);
       }
 
-      // App.py returns the structured payload directly under resJson.analysis
-      const analysis = resJson.analysis || {};
-      const plainTranslation = analysis.plain_english_translation || "No direct translation returned.";
-      const suggestedIntent = analysis.suggested_intent || analysis.subtext_and_tone || "No suggested intent returned.";
-      const actionItems = analysis.actionable_tasks || [];
-      const returnedJargon = analysis.flagged_jargon || [];
+      let parsed = null;
+
+      // Local FastAPI server format (app.py)
+      if (resJson.analysis) {
+        parsed = resJson.analysis;
+      }
+      // Cloudflare Worker / raw Gemini payload format
+      else if (resJson.candidates?.[0]?.content?.parts?.[0]?.text) {
+        let rawText = resJson.candidates[0].content.parts[0].text.trim();
+        if (rawText.startsWith("```")) {
+          rawText = rawText.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
+        }
+        parsed = JSON.parse(rawText);
+      } else {
+        throw new Error("Received unexpected response format from server.");
+      }
+
+      const plainTranslation = parsed.plain_english_translation || "No direct translation returned.";
+      const suggestedIntent = parsed.suggested_intent || parsed.subtext_and_tone || "No suggested intent returned.";
+      const actionItems = parsed.actionable_tasks || [];
+      const returnedJargon = parsed.flagged_jargon || [];
 
       clearInterval(timer);
       fill.style.width = '100%';
@@ -310,7 +329,7 @@
 
     } catch (err) {
       clearInterval(timer);
-      showError(err.message || "Failed to parse backend response.");
+      showError(err.message || "Failed to reach translation gateway.");
       console.error("De-Jargonify error details:", err);
     } finally {
       clearInterval(timer);
@@ -323,6 +342,7 @@
       }, 350);
     }
   }
+
 </script>
 <footer style="text-align: center;">
   <p>&copy; <span id="year"></span> Thomas Donofri, Anna Williams, Rafi Zaheer. All rights reserved.</p>
