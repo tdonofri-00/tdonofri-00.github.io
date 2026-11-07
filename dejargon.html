@@ -91,7 +91,7 @@
   <div class="nav-bar">
     <div>
       <h1>De-Jargonify</h1>
-      <p class="subhead">NLP translation, readability metrics, and corporate subtext decoder.</p>
+      <p class="subhead">NLP translation, readability metrics, and suggested intent analyzer.</p>
     </div>
     <a href="index.html">← Back to Portfolio</a>
   </div>
@@ -136,8 +136,8 @@
     </div>
 
     <div class="card">
-      <h3>Decoded Subtext & Tone</h3>
-      <p id="output-subtext" style="color: var(--muted); font-size: 0.95rem; line-height: 1.4;">-</p>
+      <h3>Suggested Intent</h3>
+      <p id="output-intent" style="color: var(--muted); font-size: 0.95rem; line-height: 1.4;">-</p>
 
       <h4>Identified Jargon Terms</h4>
       <div id="output-tags" class="tag-container"></div>
@@ -149,8 +149,7 @@
 </div>
 
 <script>
-  // Validated Cloudflare Worker endpoint
-  const WORKER_URL = "https://dejargon-api.thomas-j-donofri.workers.dev";
+  const API_URL = "http://localhost:8000/analyze";
 
   function countSyllables(word) {
     word = word.toLowerCase().trim();
@@ -208,9 +207,9 @@
     b.classList.remove('active');
   }
 
-  function renderResults(plain, subtext, beforeM, afterM, tags, tasks) {
+  function renderResults(plain, intent, beforeM, afterM, tags, tasks) {
     document.getElementById('output-plain').innerText = plain;
-    document.getElementById('output-subtext').innerText = subtext;
+    document.getElementById('output-intent').innerText = intent;
 
     document.getElementById('score-before').innerText = beforeM.flesch;
     document.getElementById('score-after').innerText = afterM.flesch;
@@ -274,7 +273,7 @@
     const localMatches = extractLocalJargon(text);
 
     try {
-      const res = await fetch(WORKER_URL, {
+      const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text })
@@ -283,41 +282,35 @@
       const resJson = await res.json();
 
       if (!res.ok) {
-        throw new Error(resJson.error?.message || resJson.error || `HTTP ${res.status}`);
+        throw new Error(resJson.detail || resJson.error?.message || resJson.error || `HTTP ${res.status}`);
       }
 
-      // Handle candidate parts and strip markdown backticks if present
-      let rawText = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!rawText) {
-        throw new Error("Received empty model response structure.");
-      }
-
-      rawText = rawText.trim();
-      if (rawText.startsWith("```")) {
-        rawText = rawText.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
-      }
-
-      const parsed = JSON.parse(rawText);
+      // App.py returns the structured payload directly under resJson.analysis
+      const analysis = resJson.analysis || {};
+      const plainTranslation = analysis.plain_english_translation || "No direct translation returned.";
+      const suggestedIntent = analysis.suggested_intent || analysis.subtext_and_tone || "No suggested intent returned.";
+      const actionItems = analysis.actionable_tasks || [];
+      const returnedJargon = analysis.flagged_jargon || [];
 
       clearInterval(timer);
       fill.style.width = '100%';
       percent.innerText = '100%';
 
-      const outputMetrics = calculateMetrics(parsed.plain_english_translation || "");
-      const combinedJargon = Array.from(new Set([...(parsed.flagged_jargon || []), ...localMatches]));
+      const outputMetrics = calculateMetrics(plainTranslation);
+      const combinedJargon = Array.from(new Set([...returnedJargon, ...localMatches]));
 
       renderResults(
-        parsed.plain_english_translation || "No direct translation returned.",
-        parsed.subtext_and_tone || "No implicit tone analyzed.",
+        plainTranslation,
+        suggestedIntent,
         inputMetrics,
         outputMetrics,
         combinedJargon,
-        parsed.actionable_tasks || []
+        actionItems
       );
 
     } catch (err) {
       clearInterval(timer);
-      showError(err.message || "Failed to reach translation gateway.");
+      showError(err.message || "Failed to parse backend response.");
       console.error("De-Jargonify error details:", err);
     } finally {
       clearInterval(timer);
@@ -331,5 +324,12 @@
     }
   }
 </script>
+<footer style="text-align: center;">
+  <p>&copy; <span id="year"></span> Thomas Donofri, Anna Williams, Rafi Zaheer. All rights reserved.</p>
+  <p>Created with Google Gemini Pro</p>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</footer>
 </body>
 </html>
